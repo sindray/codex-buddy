@@ -4,6 +4,8 @@
 
 A coding companion for the FoloToy AI Passport. Your local Codex activity becomes expressive cyan eyes and playful bit sounds on a real desk-side device.
 
+**[Download the assistant and firmware → Latest Release](https://github.com/sindray/codex-buddy/releases/latest)**
+
 ![Codex Buddy feature overview](output/community/codex-buddy-poster-v4.png)
 
 ## What it does
@@ -24,7 +26,7 @@ A coding companion for the FoloToy AI Passport. Your local Codex activity become
 
 Install the Codex Buddy firmware on an AI Passport, run the desktop assistant on the same computer as Codex, and connect over USB or BLE. The assistant must remain running. BLE connects from the assistant without prior system pairing; the device accepts one BLE computer connection at a time.
 
-There are no downloadable releases in the initial source publication. Build from source using the guides below. The included firmware uses the same protocol as the Windows assistant; switching computers does not require reflashing compatible Codex Buddy firmware.
+Open the [download page](https://github.com/sindray/codex-buddy/releases/latest) and choose the macOS ZIP or Windows x64 beta ZIP, plus the full firmware image. The release includes installation instructions; flash the merged `full.bin` at **0x0**. GitHub’s automatic “Source code” archives are for developers. Building from source remains optional using the guides below. The included firmware uses the same protocol as the Windows assistant; switching computers does not require reflashing compatible Codex Buddy firmware.
 
 ## Build and documentation
 

@@ -4,6 +4,8 @@
 
 **你写代码，它负责有反应。** 把 FoloToy AI Passport 变成桌边的代码搭子：思考时张望，测试过了得意，遇到问题还会“哔”你一下。
 
+**[下载电脑助手与固件 → 最新 Release](https://github.com/sindray/codex-buddy/releases/latest)**
+
 ![Codex Buddy 功能展示](output/community/codex-buddy-poster-v4.png)
 
 ## 功能
@@ -24,7 +26,7 @@
 
 给 AI Passport 安装 Codex Buddy 固件，在运行 Codex 的同一台电脑打开助手，通过 USB 或蓝牙连接。助手需要持续运行。蓝牙直接在助手内连接，无需预先在系统里配对；设备一次只能连接一台蓝牙电脑。
 
-本次首次公开源码，暂未提供可下载的 Release 安装包，请按下方指南自行构建。项目固件与 Windows 助手协议兼容；已有兼容的 Codex Buddy 固件时，换电脑不需要重新烧录。
+打开[下载页](https://github.com/sindray/codex-buddy/releases/latest)，选择 Mac ZIP 或 Windows x64 测试版 ZIP，并下载完整固件；页面附有安装说明。完整固件 `full.bin` 从 **0x0** 烧录。GitHub 自动生成的“Source code”是源码包，普通玩家无需下载；也可按下方指南自行构建。项目固件与 Windows 助手协议兼容；已有兼容的 Codex Buddy 固件时，换电脑不需要重新烧录。
 
 ## 构建与文档
 

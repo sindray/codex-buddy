@@ -1,5 +1,8 @@
 Codex Buddy｜你写代码，它负责有反应。
 
+下载助手与固件：https://github.com/sindray/codex-buddy/releases/latest
+Mac / Windows 测试版 / 完整固件，内附安装与连接说明。
+
 思考时东张西望，测试过了偷偷得意，遇到问题还会“哔”你一下。把 AI Passport 变成桌边的代码搭子。
 
 任务表情、情绪 bit 音效、USB / 蓝牙同步，外加电量、任务用时与自动熄屏。音量可调，默认 10%。Mac 还能摸摸头、看小剧场，可选输入字幕与文字互动。
