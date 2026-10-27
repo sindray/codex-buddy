@@ -1,0 +1,39 @@
+Use case: ads-marketing. Redesign image 1 into a MUCH MORE VISUAL, MUCH LESS TEXT-HEAVY Codex Buddy product poster, while preserving the actual product and accurate features. Image 1 = existing poster/style and corrected hero hardware reference. Image 2 = authoritative real hardware multi-view. Create ONE complete tall 2:3 portrait poster, crisp high resolution Chinese. Aim for 75% visual demonstration, 25% concise captions; no paragraph cards or long bullet lists.
+
+Art direction: premium, playful coding companion, charcoal and cyan with generous whitespace. Beautiful large photographic product demonstrations and restrained 3D depth, no invented robot body. No rainbow or garish gradients. Correct hardware on ALL device renders: clear rectangular badge shell, lanyard slot top center, portrait screen upper left, camera to its right, lower black panel, speaker grille bottom right. Three function buttons vertically stacked on RIGHT EDGE when looking from front. No top-edge buttons. Opposite left side has power and USB-C; do not mirror devices. Image 1 already has corrected right-side buttons, retain this geometry.
+
+Layout THREE big visual stories, not a wall of feature cards:
+
+TOP (~30%):
+Title “Codex Buddy”
+Headline “你写代码，它负责有反应。”
+A large real product hero with cyan rounded eyes, subtle desk shadow and 3 small expression faces illustrating thinking, happy and curious. Each face has only one short label “思考” “完成” “疑问”. Tiny waveform marks make bit sounds feel playful. One compact caption “任务表情 × 情绪 bit 音效”. Keep typography dominant but not oversized, no verbose marketing.
+
+MIDDLE (~28%): major visual feature “主题随电脑，眼睛还是它” with small “Mac” tag.
+Show TWO BIG clear close-ups of the REAL DEVICE SCREEN, including a thin authentic hardware bezel, SIDE BY SIDE, connected subtly to a sun icon/light Mac appearance and moon icon/dark Mac appearance. These must be large readable comparison screens, not tiny icons.
+IMPORTANT EXACT UI GEOMETRY for each 240x320 portrait display:
+- slim TOP STATUS AREA at y13, with “USB” at upper left, “85%” and battery icon at upper right.
+- Large rounded DARK face inset x6..234, y43..240, covering ~62% of height, two CYAN rounded eyes.
+- BOTTOM STATUS AREA with “思考中” and “02:31” in one row at y260, optionally blank final row.
+DARK version: outer status area/background #070A10 with muted pale text.
+LIGHT version: ONLY outer status area/background (top strip and bottom strip, and hairline side margin outside rounded face) becomes pale neutral #F3F5F6 with dark slate text. The rounded face in its center MUST REMAIN DARK #020508 and eyes MUST REMAIN CYAN #63DEED in BOTH versions. Do not turn light mode into white face, black eyes, white hardware, or recoloured whole poster. Show this exact difference visually. Labels just “深色” and “浅色”. One very short caption “外围变浅，脸屏不变”.
+
+LOWER (~25%): major visual feature “你打的字，它也看见” with small “Mac · 可选字幕” tag.
+A credible Mac laptop input-field close-up on left, and the actual device enlarged on right. In the computer input field, render exactly “今天也要加油” with a cursor. Draw a subtle thin arrow from input to the DEVICE BOTTOM SUBTITLE LINE.
+The device MUST retain its rounded dark face with CYAN eyes in upper 62%, top USB + battery, and “思考中    02:31” task row. At the BOTTOM of the SAME device DISPLAY show a sharp readable SINGLE SMALL SUBTITLE LINE exactly “今天也要加油”. The subtitle is below task/status, not floating speech bubble, not covering eyes, not giant chat screen. Make that bottom line legible by close framing of the device rather than giant font. Lightly highlight subtitle area with a minimal fine cyan underline/callout dot. Same phrase on laptop and device. Small caption “默认关闭 · 部分输入框支持”. These are product effect illustrations, not claimed real screenshots.
+
+BOTTOM (~17%):
+A light, concise pictogram strip, using visual small icons with labels only, not paragraphs. Include all these actual secondary features in TWO balanced rows:
+“USB / 蓝牙” “断线重连” “摸摸头 / 小剧场”
+“音量可调 · 默认10%” “电量 / 用时” “空闲降刷新 / 自动熄屏”
+A minimal controls microstrip: “双击 OK 锁屏 · 任意功能键唤醒 · Mac 可设熄屏时间”
+No diagram of physical button mappings.
+
+Platforms and caveats in short readable footer lines, EXACT:
+“Mac 13+ 完整版｜Windows x64 测试版”
+“Windows：任务同步 / USB / 蓝牙；兼容性待实机验证”
+“字幕、互动面板与主题同步仅 Mac 支持”
+“需电脑助手运行｜蓝牙需权限｜Mac 字幕需辅助功能授权”
+“本地解析 · 不上传聊天内容 · 产品效果示意图”
+
+Do not add any other paragraphs, feature explanations or fine print from old poster. No admin permissions, no keyboard-monitor permissions, no webcam or microphone usage, no Windows subtitles. Do not promise all textfields or character-by-character realtime. No fake screenshot app chrome overloaded with invented UI. All key ideas should be obvious from the pictures: real expressive badge, light/dark outside a still-dark face, text from computer displayed at bottom while eyes/state remain visible. Balance it like a polished consumer hardware launch poster rather than a dashboard of text.

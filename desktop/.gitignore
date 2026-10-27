@@ -1,0 +1,5 @@
+build/
+.DS_Store
+
+# Machine-local signing identity (private key is only in Keychain).
+.signing-identity
