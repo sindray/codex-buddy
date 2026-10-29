@@ -24,6 +24,10 @@ run_static_checks() {
     "${actionlint_bin}" -color .github/workflows/*.yml
 
     test_dir="$(mktemp -d /tmp/ai-passport-host-tests.XXXXXX)"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain -Iassets/fonts \
+        tests/test_wreck.c main/wreck_game.c main/wreck_render.c \
+        -o "${test_dir}/test_wreck"
+    "${test_dir}/test_wreck" "${test_dir}/wreck-preview" fuzz
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_buddy_state.c main/buddy_state.c -o "${test_dir}/test_buddy_state"
     "${test_dir}/test_buddy_state"

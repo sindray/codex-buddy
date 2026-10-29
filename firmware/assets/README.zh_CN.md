@@ -8,6 +8,12 @@
 
 ## 字库（fonts）
 
+`fonts/Wreck.ttf` 和 `fonts/wreck_font.h` 为《口袋拆迁队》使用的 Noto Sans SC
+Regular 子集，遵循 SIL OFL 1.1（见 `fonts/OFL.txt`）。安装 Pillow、fontTools 后运行
+`python3 tools/wreck_font.py`，从锁定版本 LVGL 的测试字体生成 12/16/24px 单色字库。
+生成器核对 ASCII 与 `main/wreck_render.c` 全部中文字符的源字体覆盖。
+可移植渲染器直接使用字库，不分配 LVGL 字体内存。
+
 可复用的字库文件与生成的字库源码放在 `fonts/`。
 
 - 命名要能反映字族、字重、字级与格式。

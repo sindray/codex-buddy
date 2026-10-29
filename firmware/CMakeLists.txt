@@ -1,5 +1,10 @@
 cmake_minimum_required(VERSION 3.16)
+option(PASSPORT_WRECK "Build Pocket Wreck offline arcade instead of Codex Buddy" ON)
 include($ENV{IDF_PATH}/tools/cmake/project.cmake)
 
-set(PROJECT_VER "0.4.16")
+if(PASSPORT_WRECK)
+    set(PROJECT_VER "0.1.4-wreck")
+else()
+    set(PROJECT_VER "0.4.16")
+endif()
 project(FoloToy-AI-Passport)

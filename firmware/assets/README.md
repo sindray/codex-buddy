@@ -10,6 +10,13 @@ Keep each asset in the matching subdirectory and document its destination, namin
 
 ## Fonts
 
+`fonts/Wreck.ttf` and `fonts/wreck_font.h` are the Pocket Wreck subset of
+Noto Sans SC Regular (SIL OFL 1.1, see `fonts/OFL.txt`). Run
+`python3 tools/wreck_font.py` with Pillow and fontTools to regenerate the
+12/16/24px one-bit atlas from the pinned LVGL test font. All ASCII and every
+Chinese character in `main/wreck_render.c` are checked against the source cmap.
+The portable renderer uses this atlas directly; no LVGL font allocation is used.
+
 Store reusable font files and generated font sources in `fonts/`.
 
 - Use descriptive names that include the family, weight, size, and format when relevant.
