@@ -4,13 +4,17 @@
 
 A coding companion for the FoloToy AI Passport. Your local Codex activity becomes expressive cyan eyes and playful bit sounds on a real desk-side device.
 
-**[Download the assistant and firmware → Latest Release](https://github.com/sindray/codex-buddy/releases/latest)**
+**[Download 0.5.0-preview firmware and assistants](https://github.com/sindray/codex-buddy/releases/tag/v0.5.0-preview-codex-buddy)**
+
+[Previous stable release: 0.4.16](https://github.com/sindray/codex-buddy/releases/tag/v0.4.16-codex-buddy). Desktop packages remain macOS 0.4.7 / Windows 0.1.0-beta.
 
 ![Codex Buddy feature overview](output/community/codex-buddy-poster-v4.png)
 
 ## What it does
 
-- Task expressions, animated gaze and emotion-specific bit sounds.
+- Distinct task expressions: a thinking question mark, dual loading eyes for search, and reading, coding, build and test animations; smooth rounded eyes and eased transitions.
+- On-device eye colors and animated accessories: headphones, crown, bow, antenna or scarf; six independent eye/accessory colors saved across restarts.
+- Animated gaze and emotion-specific bit sounds.
 - USB or BLE synchronization, USB priority and automatic reconnection.
 - Battery level, task status and elapsed time on the device.
 - Adjustable volume (10% default), mute, idle refresh reduction and automatic screen-off.
@@ -26,7 +30,9 @@ A coding companion for the FoloToy AI Passport. Your local Codex activity become
 
 Install the Codex Buddy firmware on an AI Passport, run the desktop assistant on the same computer as Codex, and connect over USB or BLE. The assistant must remain running. BLE connects from the assistant without prior system pairing; the device accepts one BLE computer connection at a time.
 
-Open the [download page](https://github.com/sindray/codex-buddy/releases/latest) and choose the macOS ZIP or Windows x64 beta ZIP, plus the full firmware image. The release includes installation instructions; flash the merged `full.bin` at **0x0**. GitHub’s automatic “Source code” archives are for developers. Building from source remains optional using the guides below. The included firmware uses the same protocol as the Windows assistant; switching computers does not require reflashing compatible Codex Buddy firmware.
+Open the [download page](https://github.com/sindray/codex-buddy/releases/tag/v0.5.0-preview-codex-buddy) and choose the macOS ZIP or Windows x64 beta ZIP, plus the full firmware image. The release includes installation instructions; flash the merged `full.bin` at **0x0**. GitHub’s automatic “Source code” archives are for developers. Building from source remains optional using the guides below. The included firmware uses the same protocol as the Windows assistant; switching computers does not require reflashing compatible Codex Buddy firmware.
+
+Hold OK to open appearance settings, tap OK to change fields, use UP/DOWN to select, then hold OK to save and exit. Upgrade the device firmware to use these new features; an existing matching desktop assistant can be reused. This firmware is a preview: build and host checks passed, but the exact release image and long-duration operation still need device acceptance. The poster above illustrates the older version.
 
 ## Build and documentation
 

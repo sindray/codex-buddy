@@ -4,13 +4,17 @@
 
 **你写代码，它负责有反应。** 把 FoloToy AI Passport 变成桌边的代码搭子：思考时张望，测试过了得意，遇到问题还会“哔”你一下。
 
-**[下载电脑助手与固件 → 最新 Release](https://github.com/sindray/codex-buddy/releases/latest)**
+**[下载 0.5.0-preview 新固件与电脑助手](https://github.com/sindray/codex-buddy/releases/tag/v0.5.0-preview-codex-buddy)**
+
+[旧稳定版 0.4.16](https://github.com/sindray/codex-buddy/releases/tag/v0.4.16-codex-buddy)。电脑助手仍为 Mac 0.4.7 / Windows 0.1.0-beta，已安装可继续使用。
 
 ![Codex Buddy 功能展示](output/community/codex-buddy-poster-v4.png)
 
 ## 功能
 
-- 任务表情、灵动眼神和不同情绪的 bit 音效。
+- 思考冒问号、搜索双眼 loading，阅读、编写、构建和测试各有动作；细腻圆角眼睛与缓动过渡。
+- 设备端换眼睛颜色、选择动态耳机／皇冠／蝴蝶结／天线／围巾；眼睛与配饰各 6 色，重启保留。
+- 灵动眼神和不同情绪的 bit 音效。
 - USB / BLE 同步，自动优先 USB，断线重连。
 - 电量、任务状态、任务用时一眼看见。
 - 音量可调（默认 10%）、静音、空闲降刷新、自动熄屏。
@@ -26,7 +30,9 @@
 
 给 AI Passport 安装 Codex Buddy 固件，在运行 Codex 的同一台电脑打开助手，通过 USB 或蓝牙连接。助手需要持续运行。蓝牙直接在助手内连接，无需预先在系统里配对；设备一次只能连接一台蓝牙电脑。
 
-打开[下载页](https://github.com/sindray/codex-buddy/releases/latest)，选择 Mac ZIP 或 Windows x64 测试版 ZIP，并下载完整固件；页面附有安装说明。完整固件 `full.bin` 从 **0x0** 烧录。GitHub 自动生成的“Source code”是源码包，普通玩家无需下载；也可按下方指南自行构建。项目固件与 Windows 助手协议兼容；已有兼容的 Codex Buddy 固件时，换电脑不需要重新烧录。
+打开[下载页](https://github.com/sindray/codex-buddy/releases/tag/v0.5.0-preview-codex-buddy)，选择 Mac ZIP 或 Windows x64 测试版 ZIP，并下载完整固件；页面附有安装说明。完整固件 `full.bin` 从 **0x0** 烧录。GitHub 自动生成的“Source code”是源码包，普通玩家无需下载；也可按下方指南自行构建。项目固件与 Windows 助手协议兼容；已有兼容的 Codex Buddy 固件时，换电脑不需要重新烧录。
+
+长按 OK 打开外观菜单，短按 OK 切换设置项，UP/DOWN 选择，长按 OK 保存退出。体验新表情和换装需要升级设备固件，已有对应电脑助手无需重装。本固件为预览版：构建与主机检查已通过，本次交付镜像及长期运行仍待设备验收；上图为旧版效果示意。
 
 ## 构建与文档
 

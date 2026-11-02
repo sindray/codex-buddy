@@ -10,6 +10,12 @@
 > with `CHANGELOG.zh_CN.md`. The entries currently under `Unreleased` are pending
 > review for the next release; they are not a finalized release history.
 
+## Codex Buddy 0.5.0-preview — 2026-11-02
+
+- Added distinct thinking, search, reading, coding, build and test animations, eased transitions and smooth rounded eye contours.
+- Added on-device appearance settings with six eye colors, animated optional headphones, crown, bow, antenna and scarf, and six accessory colors saved across restarts. Hold OK to open/save, tap OK to change fields, and use UP/DOWN to select.
+- Kept existing USB/BLE synchronization and desktop compatibility. Desktop packages remain macOS 0.4.7 and Windows 0.1.0-beta. This preview passed build and host gates; the exact release image and long-duration device operation remain unverified.
+
 ## Unreleased
 
 - Added the supplied 80-byte CW2017 profile for the specified 520 mAh cell, including content/update-flag checks, verified writes, the required restart sequence, and bounded SOC-readiness polling.
