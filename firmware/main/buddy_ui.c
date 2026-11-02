@@ -1,7 +1,8 @@
 #include "buddy_ui.h"
-#include "buddy_pet.h"
+#include "buddy_pixel.h"
 #include "buddy_theme.h"
 #include "lvgl.h"
+#include <math.h>
 #include <stdio.h>
 #include <string.h>
 LV_FONT_DECLARE(buddy_font_16);
@@ -20,6 +21,14 @@ static lv_obj_t *caption;
 static uint8_t caption_bits[BUDDY_CAPTION_BYTES];
 static bool caption_present;
 static uint64_t caption_at;
+static buddy_appearance_menu_t appearance_menu;
+static bool appearance_save_failed;
+/* Static scratch avoids using the small LVGL task stack or allocating per frame. */
+static buddy_pixel_part_t pixel_parts[BUDDY_PIXEL_PARTS],outgoing_parts[BUDDY_PIXEL_PARTS];
+static size_t pixel_count,outgoing_count;
+void buddy_ui_appearance(const buddy_appearance_menu_t *menu,bool save_failed) {
+    appearance_menu=*menu;appearance_save_failed=save_failed;
+}
 void buddy_ui_caption(const uint8_t *bits,uint64_t now) {
     if(!bits){caption_present=false;memset(caption_bits,0,sizeof(caption_bits));return;}
     if(!caption_present || memcmp(caption_bits,bits,sizeof(caption_bits))!=0) {
@@ -49,29 +58,51 @@ static void draw_caption(lv_event_t *event) {
 static void draw_sprite(lv_event_t *e) {
     lv_layer_t *layer=lv_event_get_layer(e);
     lv_area_t origin;lv_obj_get_coords(sprite,&origin);
-    buddy_pet_part_t parts[BUDDY_PET_PARTS];
     if(last_state!=current) {
         transition_from=last_state==B_COUNT?buddy_expression_at(current,tick,0):rendered;
+        outgoing_count=pixel_count;
+        memcpy(outgoing_parts,pixel_parts,pixel_count*sizeof(*pixel_parts));
         last_state=current;transition_at=tick;
     }
     unsigned age=tick-transition_at;
     buddy_expression_t target=buddy_expression_at(current,tick,age);
+    /* Reading has an eased line scan and a pause before the return. */
+    if(current==B_READ || current==B_REVIEW) {
+        float u=(age%70)/70.f;
+        float p=u<.76f?u/.76f:u<.87f?1:1-(u-.87f)/.13f;
+        p=p*p*(3-2*p);
+        target.gaze_x=-12+p*24;target.gaze_y=4+3*sinf(age*.01f);
+        target.left_height=target.right_height=10;
+    }
     rendered=buddy_expression_mix(transition_from,target,age/(float)BUDDY_TRANSITION_FRAMES);
-    size_t count=buddy_pet_expression_themed(rendered,tick,light_theme,parts);
-    for(size_t i=0;i<count;++i) {
-        buddy_pet_part_t p=parts[i];
-        if(p.line) {
-            lv_draw_line_dsc_t d;lv_draw_line_dsc_init(&d);
-            d.p1.x=origin.x1+p.x;d.p1.y=origin.y1+p.y;
-            d.p2.x=origin.x1+p.w;d.p2.y=origin.y1+p.h;
-            d.width=p.radius;d.round_start=1;d.round_end=1;
-            d.color=lv_color_hex(p.color);d.opa=LV_OPA_COVER;
-            lv_draw_line(layer,&d);
-        } else {
-            lv_area_t area={origin.x1+p.x,origin.y1+p.y,origin.x1+p.x+p.w-1,origin.y1+p.y+p.h-1};
-            lv_draw_rect_dsc_t d;lv_draw_rect_dsc_init(&d);
-            d.bg_color=lv_color_hex(p.color);d.bg_opa=LV_OPA_COVER;d.radius=p.radius;
-            lv_draw_rect(layer,&d,&area);
+    pixel_count=buddy_pixel_frame(current,tick,age,rendered,appearance_menu.value,pixel_parts);
+    float progress=age/(float)BUDDY_TRANSITION_FRAMES;
+    if(progress>1)progress=1;
+    progress=progress*progress*(3-2*progress);
+    for(int pass=0;pass<3;++pass) {
+        const buddy_pixel_part_t *parts=pass==1?outgoing_parts:pixel_parts;
+        size_t count=pass==1?outgoing_count:pixel_count;
+        size_t start=pass==0?0:4;
+        if(pass==0)count=4;
+        if(pass==1 && progress>=1)continue;
+        float alpha=pass==0?1:pass==1?1-progress:outgoing_count?progress:1;
+        for(size_t i=start;i<count;++i) {
+            buddy_pet_part_t p=parts[i].shape;
+            uint8_t opacity=(uint8_t)(parts[i].opacity*alpha);
+            if(!opacity)continue;
+            if(p.line) {
+                lv_draw_line_dsc_t d;lv_draw_line_dsc_init(&d);
+                d.p1.x=origin.x1+p.x;d.p1.y=origin.y1+p.y;
+                d.p2.x=origin.x1+p.w;d.p2.y=origin.y1+p.h;
+                d.width=p.radius;d.round_start=1;d.round_end=1;
+                d.color=lv_color_hex(p.color);d.opa=opacity;
+                lv_draw_line(layer,&d);
+            } else {
+                lv_area_t area={origin.x1+p.x,origin.y1+p.y,origin.x1+p.x+p.w-1,origin.y1+p.y+p.h-1};
+                lv_draw_rect_dsc_t d;lv_draw_rect_dsc_init(&d);
+                d.bg_color=lv_color_hex(p.color);d.bg_opa=opacity;d.radius=p.radius;
+                lv_draw_rect(layer,&d,&area);
+            }
         }
     }
 }
@@ -136,6 +167,7 @@ void buddy_ui_render(buddy_state_t state,unsigned frame,int battery,const char *
     current=state;tick=frame;
     lv_label_set_text(status,gallery?"DEMO":connected?(sound?(using_ble?"CODEX  /  BLE":"CODEX  /  USB"):"CODEX  /  MUTE"):"USB/BLE 等待连接");
     lv_obj_set_style_text_color(status,lv_color_hex(gallery?AMBER:connected?MINT:buddy_palette(light_theme).muted),0);
+    if(appearance_menu.open)lv_label_set_text_fmt(status,"外观 %u/4",appearance_menu.field+1);
     if(battery<0) {
         lv_label_set_text(battery_label,"--%");lv_obj_add_flag(battery_fill,LV_OBJ_FLAG_HIDDEN);
     } else {
@@ -148,7 +180,7 @@ void buddy_ui_render(buddy_state_t state,unsigned frame,int battery,const char *
     }
     lv_label_set_text(title,buddy_titles[state]);
     lv_obj_set_style_text_color(title,lv_color_hex(buddy_palette(light_theme).muted),0);
-    bool show_task=active && !volume_mode && !detail && !gallery;
+    bool show_task=active && !appearance_menu.open && !volume_mode && !detail && !gallery;
     lv_obj_set_width(title,show_task?128:192);
     if(show_task) {
         if(elapsed>=6000)lv_label_set_text_fmt(task_meta,"%uh",elapsed/3600);
@@ -168,9 +200,18 @@ void buddy_ui_render(buddy_state_t state,unsigned frame,int battery,const char *
         lv_label_set_text_fmt(meta,"DEMO  %02d / %02d",state+1,B_COUNT);
     }
     if(!audio_ready && volume_mode)lv_label_set_text(meta,"SFX UNAVAILABLE");
+    if(appearance_menu.open) {
+        const char *value=appearance_menu.field==0?buddy_color_names[appearance_menu.value.eye]:
+            appearance_menu.field==1?buddy_gear_names[appearance_menu.value.gear]:
+            appearance_menu.field==2?buddy_color_names[appearance_menu.value.tint]:buddy_titles[state];
+        lv_label_set_text_fmt(title,"%s  %s",buddy_appearance_fields[appearance_menu.field],value);
+        lv_obj_remove_flag(meta,LV_OBJ_FLAG_HIDDEN);
+        lv_label_set_text(meta,appearance_save_failed?"保存失败 长按OK重试":
+            (frame/90)%2?"长按 OK 保存退出":"UP/DN 选  OK 下一项");
+    }
     uint64_t now=(uint64_t)frame*33;
     uint64_t age=now>=caption_at?now-caption_at:0;
-    bool show=caption_present && connected && !gallery && !detail && !volume_mode && age<5000;
+    bool show=caption_present && connected && !appearance_menu.open && !gallery && !detail && !volume_mode && age<5000;
     if(show) {
         lv_obj_add_flag(meta,LV_OBJ_FLAG_HIDDEN);lv_obj_remove_flag(caption,LV_OBJ_FLAG_HIDDEN);
         lv_obj_set_style_opa(caption,age<4500?255:(uint8_t)((5000-age)*255/500),0);

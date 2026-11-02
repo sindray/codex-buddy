@@ -31,6 +31,9 @@ run_static_checks() {
         tests/test_buddy_media.c main/buddy_sound.c main/buddy_pet.c main/buddy_expression.c main/buddy_volume.c -lm -o "${test_dir}/test_buddy_media"
     "${test_dir}/test_buddy_media"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
+        tests/test_buddy_pixel.c main/buddy_pixel.c main/buddy_appearance.c main/buddy_expression.c -lm -o "${test_dir}/test_buddy_pixel"
+    "${test_dir}/test_buddy_pixel"
+    "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \
         tests/test_buddy_transport.c main/buddy_transport.c -o "${test_dir}/test_buddy_transport"
     "${test_dir}/test_buddy_transport"
     "${CC:-cc}" -std=c11 -Wall -Wextra -Werror -Imain \

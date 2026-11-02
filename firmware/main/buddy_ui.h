@@ -1,9 +1,11 @@
 #pragma once
 #include "buddy_state.h"
 #include "buddy_caption.h"
+#include "buddy_appearance.h"
 /* Caller holds the LVGL lock. NULL clears immediately. */
 void buddy_ui_caption(const uint8_t *bits,uint64_t now);
 void buddy_ui_init(void);
+void buddy_ui_appearance(const buddy_appearance_menu_t *menu,bool save_failed);
 /* Caller holds the LVGL lock; does not reset expression or caption timing. */
 void buddy_ui_theme(bool light);
 void buddy_ui_render(buddy_state_t state, unsigned frame, int battery, const char *project,

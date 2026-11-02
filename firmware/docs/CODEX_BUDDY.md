@@ -1,11 +1,43 @@
 [简体中文](CODEX_BUDDY.zh_CN.md)
 
-# Codex Buddy 0.4.8
+# Codex Buddy 0.5.0-preview
 
 Custom firmware for the FoloToy AI Passport ESP32-C3 (8 MB flash, 240 × 320
 ST7789P3). Uses the official BSP and replaces the factory demo entry point.
 The current design uses a graphite face enclosure, large-radius cyan eyes and
 separate battery/task telemetry. Bluetooth LE is optional; no microphone, Wi-Fi or cloud API is used.
+
+## 0.5.0-preview — Pixel expressions and on-device appearance
+
+Search uses two out-of-phase, variable-speed loading eyes. Thinking adds a
+question mark; reading adds scanning eyes and a document; coding uses brackets
+and a cursor; building uses arrows; testing alternates scans and brief checks.
+State changes ease over 12 target frames. Task metadata, captions, battery and
+existing sounds remain available.
+
+Hold OK to open appearance settings. Click OK to switch between eye color,
+accessory, accessory color and expression preview; UP/DOWN select an option.
+Hold OK again to save and exit. Both colors have six choices; accessories are
+none, headphones, crown, bow, antenna and scarf, with restrained motion.
+Settings persist on the device across restarts and need no desktop setup.
+Preview offers twelve common states without changing the real task. Exiting
+restores synchronization. Double OK still locks; any function key wakes;
+hold DOWN for volume and hold UP to mute.
+
+Standard eyes use native rounded rectangles at their original width. Smiles
+use 24 rounded segments per eye; search uses a 48-segment circular trail with
+precomputed geometry. Badges and accessories retain pixel styling. Headphone
+gaze is bounded to leave space for the eyes. No full-screen framebuffer is
+added. Remote sleeping packets cannot consume appearance-menu navigation.
+
+Host coverage includes all 216 appearance combinations, persistent-record
+validation, menu navigation, 18 distinct states and 57,600 bounded render
+frames (at most 283 of 320 drawing parts). The implementation passed a prior
+on-device smoke check for startup, font coverage, 10% audio initialization,
+13 USB state receipts and saved-setting readback. The delivery checkout is
+built separately; its rebuilt image has not been flashed. Physical-key
+walkthrough, perceived smoothness/audio, BLE regression and long-duration
+stability remain unverified.
 
 ## 0.4.8 — Optional live input captions
 
@@ -229,8 +261,9 @@ animation/audio assets. Historical versions below describe earlier designs.
 ## Controls
 
 - UP/DOWN: toggle task details. OK: wave while idle/completed.
-- Hold OK: open the 20-state animation gallery. UP/DOWN: browse, OK: exit.
-- Gallery is labelled DEMO; live task packets interrupt it.
+- Hold OK: open appearance settings. UP/DOWN: choose, OK: next field;
+  hold OK again to save and exit.
+- Expression preview offers twelve common states; exiting restores the live task.
 - After 90 seconds idle, dim to 15%. Any key wakes without triggering an action.
 - Missing USB heartbeat for 15 seconds shows disconnected. Waiting/error states
   persist; only a real task-completion event triggers completion.
@@ -261,12 +294,13 @@ No API key is required.
 
 ## Fonts and validation
 
-`assets/fonts/NotoSansSC-Buddy.ttf` is a 223-character Noto Sans SC Medium subset
-from Google Fonts (95 printable ASCII and 128 interface Chinese characters).
-The OFL license is in the same directory. Generated 16/24 px LVGL fonts use
-`lv_font_conv` 1.5.3. Run `npm ci --prefix tools/font-tool` then
-`python3 tools/buddy/fonts.py` to regenerate. Adding characters requires updating
-the source subset as well; do not silently rely on placeholder glyphs.
+`assets/fonts/NotoSansSC-Buddy.ttf` is a legacy Google Fonts subset. Current
+16/20/24 px, uncompressed 4bpp LVGL fonts are generated from the pinned LVGL
+dependency's `NotoSansSC-Regular.ttf`, covering 95 printable ASCII and 157
+interface Chinese characters. The OFL license remains in the fonts directory.
+Run `npm ci --prefix tools/font-tool` then `python3 tools/buddy/fonts.py` with
+`lv_font_conv` 1.5.3. The generator checks every requested Chinese glyph in its
+output; do not silently rely on placeholder glyphs.
 
 `tools/validate.sh` runs repository checks, upstream BSP/demo host regression
 tests, Buddy transition/bridge tests, a clean firmware build and image checks.

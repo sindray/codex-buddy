@@ -34,6 +34,31 @@ typedef struct {buddy_state_t state;unsigned active,elapsed;char task[49];uint32
 static QueueHandle_t keys,packets,ble_packets;
 static buddy_model_t model;
 static bool gallery,detail,volume_mode,screen_locked;
+static buddy_appearance_menu_t appearance_menu;
+static bool appearance_save_failed;
+static bool appearance_settings(bool save) {
+    nvs_handle_t handle;
+    esp_err_t err=nvs_open("buddy_look",save?NVS_READWRITE:NVS_READONLY,&handle);
+    if(err==ESP_ERR_NVS_NOT_FOUND && !save)return true;
+    if(err!=ESP_OK){ESP_LOGW(TAG,"Appearance open: %s",esp_err_to_name(err));return false;}
+    uint32_t value=buddy_appearance_pack(appearance_menu.value);
+    if(save){
+        err=nvs_set_u32(handle,"style_v1",value);
+        if(err==ESP_OK)err=nvs_commit(handle);
+    }else{
+        err=nvs_get_u32(handle,"style_v1",&value);
+        if(err==ESP_OK)appearance_menu.value=buddy_appearance_unpack(value);
+    }
+    nvs_close(handle);
+    if(err!=ESP_OK && err!=ESP_ERR_NVS_NOT_FOUND){ESP_LOGW(TAG,"Appearance settings: %s",esp_err_to_name(err));return false;}
+    ESP_LOGI(TAG,"APPEARANCE %s eye=%u gear=%u tint=%u",save?"saved":"loaded",appearance_menu.value.eye,appearance_menu.value.gear,appearance_menu.value.tint);
+    return true;
+}
+static bool appearance_close(void) {
+    if(!appearance_settings(true)){appearance_save_failed=true;return false;}
+    appearance_menu.open=false;appearance_save_failed=false;gallery=false;
+    return true;
+}
 static uint64_t volume_until;
 static int gallery_index;
 static uint64_t wave_until;
@@ -105,9 +130,15 @@ static void serial_task(void *arg) {
 }
 static bool font_check(const lv_font_t *font) {
     bool ok=true;
-    const char *fixed="DEMO USB CODEX 等待连接 UP/DN 返回 OK 逗逗 VOL MUTED SFX UNAVAILABLE";
-    for(int i=0;i<=B_COUNT*2;++i) {
-        const char *p=i==B_COUNT*2?fixed:i<B_COUNT?buddy_titles[i]:buddy_subtitles[i-B_COUNT];
+    const char *fixed="DEMO USB CODEX 等待连接 UP/DN 返回 OK 逗逗 VOL MUTED SFX UNAVAILABLE 外观 保存失败 长按OK重试 保存退出 选 下一项";
+    for(unsigned i=0;i<2*B_COUNT+1+BUDDY_COLOR_COUNT+BUDDY_GEAR_COUNT+BUDDY_APPEARANCE_FIELDS;++i) {
+        const char *p;
+        if(i< B_COUNT)p=buddy_titles[i];
+        else if(i<2*B_COUNT)p=buddy_subtitles[i-B_COUNT];
+        else if(i==2*B_COUNT)p=fixed;
+        else if(i<2*B_COUNT+1+BUDDY_COLOR_COUNT)p=buddy_color_names[i-2*B_COUNT-1];
+        else if(i<2*B_COUNT+1+BUDDY_COLOR_COUNT+BUDDY_GEAR_COUNT)p=buddy_gear_names[i-2*B_COUNT-1-BUDDY_COLOR_COUNT];
+        else p=buddy_appearance_fields[i-2*B_COUNT-1-BUDDY_COLOR_COUNT-BUDDY_GEAR_COUNT];
         while(*p) {
             uint32_t c=(unsigned char)*p++;
             if(c>=0xe0){c=(c&15)<<12;c|=((unsigned char)*p++&63)<<6;c|=(unsigned char)*p++&63;}
@@ -144,7 +175,7 @@ void app_main(void) {
     if(ble!=ESP_OK)ESP_LOGE(TAG,"BLE unavailable: %s; USB retained",esp_err_to_name(ble));
     ESP_LOGI(TAG,"READY states=%d free_heap=%lu largest=%lu",B_COUNT,(unsigned long)esp_get_free_heap_size(),
         (unsigned long)heap_caps_get_largest_free_block(MALLOC_CAP_8BIT));
-    screen_settings(false);activity_at=now_ms();
+    screen_settings(false);appearance_menu.value=buddy_appearance_default();appearance_settings(false);activity_at=now_ms();
     uint64_t battery_at=0,render_at=0;buddy_state_t previous=B_COUNT;
     bool redraw=true,wake_display=false;
     buddy_sound_gate_t sound_gate={0};
@@ -176,13 +207,34 @@ void app_main(void) {
             if(!using_ble)printf("{\"buddy_ack\":%lu,\"state\":\"%s\",\"screenOffSeconds\":%u,\"display\":%d}\n",(unsigned long)p.seq,buddy_ids[p.state],screen_off_seconds,display_mode);
             fflush(stdout);
             // A real state change always interrupts the demo, including urgent events.
-            if(gallery && p.state!=B_IDLE)gallery=false;
+            if(gallery && !appearance_menu.open && p.state!=B_IDLE)gallery=false;
         }
         while(xQueueReceive(keys,&k,0)) {
             bool was_asleep=display_mode!=B_DISPLAY_ACTIVE || buddy_visible(&model,now)==B_SLEEP;buddy_touch(&model,now);activity_at=now;redraw=true;
+            /* A remote nap cannot consume navigation in the active appearance menu. */
+            if(appearance_menu.open && display_mode==B_DISPLAY_ACTIVE)was_asleep=false;
+            bool lock_gesture=k.event==BSP_BTN_DOUBLE && k.key==BSP_BTN_OK;
+            if(lock_gesture && appearance_menu.open && !appearance_close())continue;
             if(buddy_screen_key(&screen_locked,was_asleep,k.event==BSP_BTN_DOUBLE && k.key==BSP_BTN_OK)){
                 if(screen_locked){gallery=false;volume_mode=false;wave_until=0;}
                 ESP_LOGI(TAG,"SCREEN %s",screen_locked?"locked":"unlocked");
+                continue;
+            }
+            if(k.event==BSP_BTN_LONG && k.key==BSP_BTN_OK) {
+                if(appearance_menu.open)appearance_close();
+                else {
+                    appearance_menu.open=true;appearance_menu.field=0;appearance_menu.preview=0;
+                    appearance_save_failed=false;gallery=false;detail=false;volume_mode=false;
+                }
+                ESP_LOGI(TAG,"APPEARANCE menu=%d",appearance_menu.open);
+                continue;
+            }
+            if(appearance_menu.open) {
+                if(k.event==BSP_BTN_CLICK) {
+                    if(k.key==BSP_BTN_OK)buddy_appearance_next(&appearance_menu);
+                    else buddy_appearance_adjust(&appearance_menu,k.key==BSP_BTN_UP?-1:1);
+                    appearance_save_failed=false;buddy_audio_play(S_CLICK);
+                }
                 continue;
             }
             if(volume_mode)volume_until=now+10000;
@@ -199,8 +251,7 @@ void app_main(void) {
                 continue;
             }
             if(k.event==BSP_BTN_CLICK && k.key!=BSP_BTN_OK && !gallery)buddy_audio_play(S_CLICK);
-            if(k.event==BSP_BTN_LONG && k.key==BSP_BTN_OK){gallery=!gallery;gallery_index=0;detail=false;}
-            else if(k.event==BSP_BTN_CLICK) {
+            if(k.event==BSP_BTN_CLICK) {
                 if(gallery) {
                     if(k.key==BSP_BTN_OK)gallery=false;
                     else gallery_index=(gallery_index+(k.key==BSP_BTN_UP?-1:1)+B_COUNT)%B_COUNT;
@@ -210,7 +261,10 @@ void app_main(void) {
         }
         if(volume_mode && now>=volume_until)volume_mode=false;
         buddy_state_t visible=buddy_visible(&model,now);
-        if(gallery)visible=(buddy_state_t)gallery_index;
+        if(appearance_menu.open) {
+            visible=buddy_appearance_preview(&appearance_menu);
+            gallery=appearance_menu.field==3;gallery_index=visible;
+        }else if(gallery)visible=(buddy_state_t)gallery_index;
         else if(now<wave_until && (visible==B_IDLE || visible==B_DONE))visible=B_WAVE;
         bool connected=model.connected && now-model.last_packet<=15000;
         if(now-battery_at>15000){battery=bat==ESP_OK?bsp_battery_soc():-1;battery_at=now;}
@@ -220,7 +274,7 @@ void app_main(void) {
             ESP_LOGI(TAG,"STATE %s%s",buddy_ids[visible],gallery?" [DEMO]":"");
             previous=visible;redraw=true;
         }
-        bool busy=gallery || volume_mode || now<wave_until || (connected &&
+        bool busy=appearance_menu.open || gallery || volume_mode || now<wave_until || (connected &&
             (latest.active || (model.remote!=B_IDLE && model.remote!=B_DONE && model.remote!=B_CANCEL && model.remote!=B_SLEEP)));
         if(busy)activity_at=now;
         buddy_display_mode_t next=screen_locked?B_DISPLAY_OFF:buddy_display_mode(now,activity_at,screen_off_seconds,busy);
@@ -231,6 +285,7 @@ void app_main(void) {
         }
         unsigned interval=buddy_display_interval(display_mode);
         if(interval && (redraw || now-render_at>=interval) && bsp_lvgl_lock(200)) {
+            buddy_ui_appearance(&appearance_menu,appearance_save_failed);
             buddy_ui_render(visible,(unsigned)(now/33),battery,latest.task,latest.active,
                 latest.elapsed+(connected && latest.active?(now-model.last_packet)/1000:0),connected,gallery,detail,buddy_audio_enabled(),volume_mode,buddy_audio_volume(),buddy_audio_available(),using_ble);
             bsp_lvgl_unlock();

@@ -10,6 +10,12 @@
 
 可复用的字库文件与生成的字库源码放在 `fonts/`。
 
+Codex Buddy 的 `fonts/buddy_font_{16,20,24}.c` 包含 95 个可打印 ASCII 和
+157 个界面汉字，使用未压缩 4bpp。安装 `tools/font-tool` 中锁定的依赖后，
+运行 `python3 tools/buddy/fonts.py` 重新生成。来源为锁定版本 LVGL 依赖的
+`tests/src/test_files/fonts/noto/NotoSansSC-Regular.ttf`，遵循 OFL 许可；
+生成器检查请求汉字在产物中的覆盖情况。`NotoSansSC-Buddy.ttf` 为历史子集。
+
 - 命名要能反映字族、字重、字级与格式。
 - 记录来源、许可、字符范围、转换命令与目标放置路径。
 - 添加字库前评估 Flash 与内部 RAM 影响；ESP32-C3 无 PSRAM。

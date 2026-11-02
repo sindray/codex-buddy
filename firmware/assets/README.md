@@ -12,6 +12,13 @@ Keep each asset in the matching subdirectory and document its destination, namin
 
 Store reusable font files and generated font sources in `fonts/`.
 
+Codex Buddy's `fonts/buddy_font_{16,20,24}.c` contain 95 printable ASCII and
+157 interface Chinese characters at 4bpp, uncompressed. Regenerate with
+`python3 tools/buddy/fonts.py` after installing the pinned `tools/font-tool`
+dependencies. The source is the pinned LVGL dependency's OFL-licensed
+`tests/src/test_files/fonts/noto/NotoSansSC-Regular.ttf`; requested Chinese
+glyphs are checked in the output. `NotoSansSC-Buddy.ttf` is a legacy subset.
+
 - Use descriptive names that include the family, weight, size, and format when relevant.
 - Document the source, license, character range, conversion command, and expected destination.
 - Check Flash and internal-RAM impact before adding a font; the ESP32-C3 has no PSRAM.
